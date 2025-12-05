@@ -128,16 +128,13 @@ function GeometricGrid() {
   );
 }
 
-function Scene({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: number }> }) {
-  const { size } = useThree();
-  const isMobile = size.width < 768;
-  
+function Scene({ mouse, particleCount }: { mouse: React.MutableRefObject<{ x: number; y: number }>; particleCount: number }) {
   return (
     <>
       <color attach="background" args={['#050505']} />
       <fog attach="fog" args={['#050505', 5, 25]} />
       <ambientLight intensity={0.1} />
-      <Particles count={isMobile ? 200 : 500} mouse={mouse} />
+      <Particles count={particleCount} mouse={mouse} />
       <GeometricGrid />
     </>
   );
@@ -189,6 +186,12 @@ export default function ParticleBackground() {
   const mouse = useRef({ x: 0, y: 0 });
   const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null);
   const [hasError, setHasError] = useState(false);
+  const [particleCount] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768 ? 200 : 500;
+    }
+    return 500;
+  });
 
   useEffect(() => {
     setWebGLSupported(isWebGLAvailable());
@@ -225,7 +228,7 @@ export default function ParticleBackground() {
         }}
         fallback={<CSSFallbackBackground />}
       >
-        <Scene mouse={mouse} />
+        <Scene mouse={mouse} particleCount={particleCount} />
       </Canvas>
     </div>
   );
