@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -41,17 +41,14 @@ function Particles({ count = 500, mouse }: { count?: number; mouse: React.Mutabl
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
       
-      // Matrix rain effect - particles fall down
       positions[i3 + 1] -= speeds[i];
       
-      // Reset position when particle goes below screen
       if (positions[i3 + 1] < -10) {
         positions[i3 + 1] = 10;
         positions[i3] = (Math.random() - 0.5) * 20;
         positions[i3 + 2] = (Math.random() - 0.5) * 20;
       }
       
-      // Mouse interaction - gentle repulsion
       const dx = positions[i3] - mouse.current.x * 5;
       const dy = positions[i3 + 1] - mouse.current.y * 5;
       const dist = Math.sqrt(dx * dx + dy * dy);
@@ -115,11 +112,8 @@ function GeometricGrid() {
     const divisions = 10;
     const step = gridSize / divisions;
 
-    // Create grid lines
     for (let i = -gridSize / 2; i <= gridSize / 2; i += step) {
-      // Horizontal lines
       positions.push(-gridSize / 2, i, -5, gridSize / 2, i, -5);
-      // Vertical lines
       positions.push(i, -gridSize / 2, -5, i, gridSize / 2, -5);
     }
 
@@ -149,8 +143,56 @@ function Scene({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: number
   );
 }
 
+function CSSFallbackBackground() {
+  return (
+    <div 
+      className="fixed inset-0 -z-10 bg-[#050505] overflow-hidden"
+      data-testid="particle-background-fallback"
+    >
+      <div className="absolute inset-0 opacity-30">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 rounded-full bg-primary animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${2 + Math.random() * 2}s`,
+            }}
+          />
+        ))}
+      </div>
+      <div 
+        className="absolute inset-0 opacity-5"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+                           linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px',
+        }}
+      />
+    </div>
+  );
+}
+
+function isWebGLAvailable(): boolean {
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    return gl !== null && gl !== undefined;
+  } catch {
+    return false;
+  }
+}
+
 export default function ParticleBackground() {
   const mouse = useRef({ x: 0, y: 0 });
+  const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setWebGLSupported(isWebGLAvailable());
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -162,12 +204,26 @@ export default function ParticleBackground() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  if (webGLSupported === null) {
+    return <div className="fixed inset-0 -z-10 bg-[#050505]" data-testid="particle-background" />;
+  }
+
+  if (!webGLSupported || hasError) {
+    return <CSSFallbackBackground />;
+  }
+
   return (
     <div className="fixed inset-0 -z-10" data-testid="particle-background">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 60 }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true }}
+        onCreated={({ gl }) => {
+          if (!gl.getContext()) {
+            setHasError(true);
+          }
+        }}
+        fallback={<CSSFallbackBackground />}
       >
         <Scene mouse={mouse} />
       </Canvas>
