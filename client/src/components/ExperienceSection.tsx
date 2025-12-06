@@ -10,7 +10,7 @@ const experiences = [
     achievements: [
       {
         text: 'Configured Jenkins jobs, wrote shell scripts, provided administration and support in Jenkins for continuous integration and deployment',
-        highlight: 'sped up software development process by 30%',
+        highlight: ' sped up software development process by 30%',
       },
       {
         text: 'Container management using Docker by writing Docker files and installed and configured Kubernetes',
@@ -22,7 +22,7 @@ const experiences = [
       },
       {
         text: 'Managed disk space issues using CloudWatch',
-        highlight: 'reducing operational costs by 20%',
+        highlight: ' reducing operational costs by 20%',
       },
       {
         text: 'Worked with 50+ developers, cloud platform engineers, security engineers, architects and stakeholders across the project',
@@ -50,7 +50,7 @@ const experiences = [
       },
       {
         text: 'Analyzed and fixed code errors',
-        highlight: '54% less system downtimes',
+        highlight: ' 54% less system downtimes',
       },
     ],
   },
