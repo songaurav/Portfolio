@@ -1,4 +1,11 @@
 import { Shield, Github, Linkedin, Mail, Terminal } from 'lucide-react';
+const GIcon = ({ className }: { className?: string }) => (
+  <img 
+    src="/logo.png" 
+    alt="G Logo" 
+    className={className}
+  />
+);
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -10,7 +17,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 text-primary font-display font-bold text-xl mb-4">
-              <Shield className="w-6 h-6" />
+              <GIcon className="w-6 h-6" />
               <span>Gaurav C Sonawane</span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
