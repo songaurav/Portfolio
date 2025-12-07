@@ -3,6 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, X, Shield } from 'lucide-react';
 
+const GIcon = ({ className }: { className?: string }) => (
+  <img 
+    src="./logo.png" 
+    alt="G Logo" 
+    className={className}
+  />
+);
+
 const navItems = [
   { name: 'About', href: '#about' },
   { name: 'Education', href: '#education' },
@@ -69,7 +77,7 @@ export default function Navigation() {
             }}
             data-testid="nav-logo"
           >
-            <Shield className="w-6 h-6" />
+            <GIcon className="w-6 h-6" />
             <span className="hidden sm:inline">GCS</span>
           </a>
 
