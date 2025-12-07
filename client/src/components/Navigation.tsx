@@ -5,7 +5,7 @@ import { Menu, X, Shield } from 'lucide-react';
 
 const GIcon = ({ className }: { className?: string }) => (
   <img 
-    src="./logo.png" 
+    src="/logo.png" 
     alt="G Logo" 
     className={className}
   />
